@@ -1,0 +1,50 @@
+
+package com.example.studentmanagement.dao.model;
+
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "students")
+public class Student {
+
+
+    @Id private String id;
+
+    private String rollNo; // Unique identifier (Roll number)
+    protected String name;
+    private Integer classroomId;
+
+    public Student() {}
+
+    public Student(String rollNo, String name, Integer classroomId) {
+        this.rollNo = rollNo;
+        this.name = name;
+        this.classroomId = classroomId;
+    }
+
+    public String getRollNo() {
+        return rollNo;
+    }
+
+    public void setRollNo(String rollNo) {
+        this.rollNo = rollNo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getClassroomId() {
+        return this.classroomId;
+    }
+    public void setClassroomId(Integer classroomId) {
+        this.classroomId = classroomId;
+    }
+
+
+}
