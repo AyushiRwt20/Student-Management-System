@@ -1,0 +1,30 @@
+package com.example.studentmanagement.dao.model;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "classrooms")
+public class Classroom {
+
+    @Id
+    private String cid;
+    private Integer classroomId;
+    private String className;
+
+    // Getters and Setters
+    public Integer getClassroomId() {
+        return classroomId;
+    }
+
+    public void setClassroomId(Integer classroomId){
+        this.classroomId = classroomId;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+}
+
