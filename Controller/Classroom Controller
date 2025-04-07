@@ -1,0 +1,44 @@
+package com.example.studentmanagement.controller;
+import com.example.studentmanagement.dao.model.Classroom;
+import com.example.studentmanagement.service.ClassroomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/classroom")
+public class ClassroomController {
+
+    @Autowired
+    private ClassroomService classroomService;
+
+    @PostMapping // adding class
+    public ResponseEntity<Classroom> addClassroom(@RequestBody Classroom classroom) {
+        return ResponseEntity.ok(classroomService.addClassroom(classroom));
+    }
+
+    @GetMapping // all classes
+    public ResponseEntity<List<Classroom>> getAllClassrooms() {
+        return ResponseEntity.ok(classroomService.getAllClassrooms());
+    }
+
+    @GetMapping("/{classroomId}") // by cid
+    public ResponseEntity<Classroom> getClassroomById(@PathVariable Integer classroomId) {
+        return classroomService.getClassroomById(classroomId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{classroomId}") // deleting by cid
+    public ResponseEntity<Void> deleteClassroom(@PathVariable Integer classroomId) {
+        if (classroomService.getClassroomById(classroomId).isPresent()) {
+            classroomService.deleteClassroom(classroomId);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+}
+
+
