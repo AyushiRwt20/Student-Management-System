@@ -1,0 +1,94 @@
+
+/*package com.example.studentmanagement.dao.model;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "marks")
+public class Marks {
+
+    private String subjectName;
+    private double marks;
+    private double totalMarks;
+    private double averageMarks;
+    private String status;
+
+    public Marks() {}
+
+    public Marks(String subjectName, double marks) {
+        this.subjectName = subjectName;
+        this.marks = marks;
+    }
+
+    public double getMarks() {
+        return marks;
+    }
+
+    public void setMarks(double marks) {
+        this.marks = marks;
+    }
+
+
+    public void setTotalMarks(double totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+
+
+    public void setAverageMarks(double averageMarks) {
+        this.averageMarks = averageMarks;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public static Object getSubject(Object o) {
+        return o;
+    }
+
+    public static Object getMarksObtained(Object o) {
+        return o;
+    }
+
+    public static Object getSubjectName(Object o) {
+        return o;
+    }
+}*/
+
+package com.example.studentmanagement.dao.model;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Map;
+
+@Document(collection = "marks")
+public class Marks {
+    @Id private String id;
+    private String rollNo; // Student Roll Number
+    private Map<String, Integer> subjectMarks; // Subject Name -> Marks
+    private Integer classroomID;
+
+    public Marks() {}
+
+    public Marks(String rollNo, Map<String, Integer> subjectMarks,Integer classroomID) {
+        this.rollNo = rollNo;
+        this.subjectMarks = subjectMarks;
+        this.classroomID = classroomID;
+    }
+
+    public String getRollNo() { return rollNo; }
+    public void setRollNo(String rollNo) { this.rollNo = rollNo; }
+
+    public Map<String, Integer> getSubjectMarks() { return subjectMarks; }
+    public void setSubjectMarks(Map<String, Integer> subjectMarks) { this.subjectMarks = subjectMarks; }
+
+    public Integer getClassroomID() { return classroomID; }
+    public void setClassroomID(Integer classroomID) { this.classroomID = classroomID; }
+
+
+}
+
