@@ -1,0 +1,9 @@
+package com.example.studentmanagement.dao.repository;
+import com.example.studentmanagement.dao.model.Course;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CourseRepository extends MongoRepository<Course, String> {
+    // MongoRepository provides basic CRUD operations
+}
