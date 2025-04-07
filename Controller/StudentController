@@ -1,0 +1,79 @@
+package com.example.studentmanagement.controller;
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/students")
+public class StudentController {
+private static int totalRequests = 0;
+    @Autowired
+    private StudentService studentService;
+
+    @PostMapping
+    public ResponseEntity<?> createStudent(@RequestBody Student student) {
+        totalRequests++;
+
+
+        Optional<Student> existingStudent = studentService.getStudentByRollNo(student.getRollNo());
+        if (existingStudent.isPresent()) {
+            // Roll number already exists, return a conflict response
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("A student with roll number " + student.getRollNo() + " already exists.");
+        }
+
+
+        Student savedStudent = studentService.saveStudent(student);
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
+    }
+
+
+    @GetMapping(path = {"", "/"})
+    public ResponseEntity<List<Student>> getAllStudents() {
+        List<Student> students = studentService.getAllStudents();
+        return new ResponseEntity<>(students, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{rollNo}")
+    public ResponseEntity<Student> getStudentByRollNo(@PathVariable String rollNo) {
+        Optional<Student> student = studentService.getStudentByRollNo(rollNo);
+        return student.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    //updating student by rollno
+    @PutMapping("/{rollNo}")
+    public ResponseEntity<Student> updateStudent(@PathVariable String rollNo, @RequestBody Student updatedStudent) {
+        Optional<Student> existingStudent = Optional.ofNullable(studentService.updateStudent(rollNo, updatedStudent));
+
+        if (existingStudent.isPresent()) {
+            return ResponseEntity.ok(existingStudent.get()); // Return updated student
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Student not found
+        }
+    }
+
+
+    // Delete student by roll number
+    @DeleteMapping("/{rollNo}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable String rollNo) {
+        studentService.deleteStudent(rollNo);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/class/{classroomId}")
+    public ResponseEntity<List<Student>> getStudentsByClassroomId(@PathVariable Integer classroomId) {
+        List<Student> students = studentService.getStudentsByClassroomId(classroomId);
+        return ResponseEntity.ok(students);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<Integer> getRequestCount() {
+        return ResponseEntity.ok(totalRequests);
+    }
+}
