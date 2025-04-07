@@ -1,0 +1,91 @@
+package com.example.studentmanagement.dao.model.dto;
+import com.example.studentmanagement.ReportCardType;
+import com.example.studentmanagement.dao.model.ReportCard;
+import java.util.Map;
+
+
+
+
+public class ReportCardDTO {
+    private String rollNo;
+    private String studentName;
+    private Integer classroomId;
+    private int totalMarks;
+    private String grade;
+    private Map<String, Integer> subjectMarks;
+    private ReportCardType reportCardType;
+
+    // Constructor
+    public ReportCardDTO(String rollNo, String studentName, Integer classroomId, int totalMarks, String grade, Map<String, Integer> subjectMarks) {
+        this.rollNo = rollNo;
+        this.studentName = studentName;
+        this.classroomId = classroomId;
+        this.totalMarks = totalMarks;
+        this.grade = grade;
+        this.subjectMarks = subjectMarks;
+        this.reportCardType = determineReportCardType(totalMarks);
+    }
+
+    // Getters and Setters
+    public String getRollNo() {
+        return rollNo;
+    }
+
+    public void setRollNo(String rollNo) {
+        this.rollNo = rollNo;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public Integer getClassroomId() {
+        return classroomId;
+    }
+
+    public void setClassroomId(Integer classroomId) {
+        this.classroomId = classroomId;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+
+    public void setTotalMarks(int totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public Map<String, Integer> getSubjectMarks() {
+        return subjectMarks;
+    }
+
+    public void setSubjectMarks(Map<String, Integer> subjectMarks) {
+        this.subjectMarks = subjectMarks;
+    }
+
+    private ReportCardType determineReportCardType(int totalMarks) {
+        return (totalMarks >= 350) ? ReportCardType.PASS : ReportCardType.FAIL;
+    }
+
+    public ReportCardType getReportCardType() {
+        return reportCardType;
+    }
+}
+
+
+
+
+
+
