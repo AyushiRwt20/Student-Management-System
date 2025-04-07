@@ -1,0 +1,43 @@
+package com.example.studentmanagement.factory;
+
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import com.example.studentmanagement.ReportCardType;
+import com.example.studentmanagement.service.reportcard.GradeCalculatorService;
+import com.example.studentmanagement.service.reportcard.ReportCardGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class ReportCardFactory {
+
+    @Autowired
+    private ReportCardGeneratorService reportCardGeneratorService;
+
+    @Autowired
+    private GradeCalculatorService gradeCalculatorService;
+
+    public ReportCardDTO createReportCard(String rollNo) {
+        return reportCardGeneratorService.generateReportCard(rollNo);
+    }
+
+    public List<ReportCardDTO> createAllReportCards() {
+        return reportCardGeneratorService.generateAllReportCards();
+    }
+
+    public List<ReportCardDTO> createFilteredReportCards(ReportCardType type) {
+        return reportCardGeneratorService.generateAllReportCards().stream()
+                .filter(reportCard -> {
+                    boolean isPass = gradeCalculatorService.isPass(reportCard.getTotalMarks());
+                    return (type == ReportCardType.PASS && isPass) || (type == ReportCardType.FAIL && !isPass);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+}
+
+
+
