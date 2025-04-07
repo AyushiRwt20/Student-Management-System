@@ -1,0 +1,49 @@
+package com.example.studentmanagement.controller;
+import com.example.studentmanagement.ReportCardType;
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import com.example.studentmanagement.service.reportcard.ReportCardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+
+
+
+
+@RestController
+@RequestMapping("/report_cards")
+public class ReportCardController {
+
+    @Autowired
+    private ReportCardService reportCardService;
+
+    @GetMapping("/{rollNo}")
+    public ResponseEntity<ReportCardDTO> getReportCardByRollNo(@PathVariable String rollNo) {
+        ReportCardDTO reportCard = reportCardService.getReportCardByRollNo(rollNo);
+        return ResponseEntity.ok(reportCard);
+    }
+    @GetMapping
+    public ResponseEntity<List<ReportCardDTO>> getAllReportCards() {
+        List<ReportCardDTO> reportCards = reportCardService.getAllReportCards();
+
+        if (reportCards.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+
+        return ResponseEntity.ok(reportCards);
+    }
+
+
+    @GetMapping("/type")
+    public ResponseEntity<List<ReportCardDTO>> getReportCardsByType(@RequestParam ReportCardType reportCardType) {
+        List<ReportCardDTO> reportCards = reportCardService.getFilteredReportCards(reportCardType);
+        return ResponseEntity.ok(reportCards);
+    }
+
+
+}
+
+
+
