@@ -1,0 +1,52 @@
+package com.example.studentmanagement.controller;
+import com.example.studentmanagement.dao.model.Course;
+import com.example.studentmanagement.service.CourseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+
+// Controller for Course
+@RestController
+@RequestMapping("/course")
+public class CourseController {
+
+    @Autowired
+    private CourseService courseService;
+
+    @PostMapping
+    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
+        return ResponseEntity.ok(courseService.addCourse(course));
+    }
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Course> updateCourse(@PathVariable String courseId, @RequestBody Course updatedCourse) {
+        if (updatedCourse.getCourseName() == null) {
+            return ResponseEntity.badRequest().body(null); // Prevents overwriting with null
+        }
+        return ResponseEntity.ok(courseService.updateCourse(courseId, updatedCourse));
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<Course>> getAllCourses() {
+        return ResponseEntity.ok(courseService.getAllCourses());
+    }
+
+    @GetMapping("/{courseId}")
+    public ResponseEntity<Course> getCourseById(@PathVariable String courseId) {
+        return courseService.getCourseById(courseId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable String courseId) {
+        if (courseService.getCourseById(courseId).isPresent()) {
+            courseService.deleteCourse(courseId);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+}
+
