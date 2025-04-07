@@ -1,0 +1,61 @@
+package com.example.studentmanagement.controller;
+import com.example.studentmanagement.dao.model.Marks;
+import com.example.studentmanagement.service.MarksService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/marks")
+public class MarksController {
+
+    @Autowired
+    private MarksService marksService;
+
+    @PostMapping
+    public ResponseEntity<Marks> addMarks(@RequestBody Marks marks) {
+        Marks savedMarks = marksService.addMarks(marks);
+        return ResponseEntity.ok(savedMarks);
+    }
+
+
+    @PutMapping("/{rollNo}")
+    public ResponseEntity<Marks> updateMarks(@PathVariable String rollNo, @RequestBody Marks updatedMarks) {
+        Optional<Marks> existingMarks = Optional.ofNullable(marksService.updateMarks(rollNo, updatedMarks));
+
+        return existingMarks.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+
+    @GetMapping("/{rollNo}")
+    public ResponseEntity<Marks> getMarksByRollNo(@PathVariable String rollNo) {
+        Optional<Marks> marks = marksService.getMarksByRollNo(rollNo);
+        return marks.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/class/{classroomID}")
+    public ResponseEntity<List<Marks>> getMarksByClassroomId(@PathVariable Integer classroomID) {
+        List<Marks> marksList = marksService.getMarksByClassroomId(classroomID);
+        return ResponseEntity.ok(marksList);
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<Marks>> getAllMarks() {
+        List<Marks> marksList = marksService.getAllMarks();
+        return ResponseEntity.ok(marksList);
+    }
+
+
+    @DeleteMapping("/{rollNo}")
+    public ResponseEntity<String> deleteMarksByRollNo(@PathVariable String rollNo) {
+        marksService.deleteMarksByRollNo(rollNo);
+        return ResponseEntity.ok("Marks deleted successfully for roll number: " + rollNo);
+    }
+}
