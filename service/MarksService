@@ -1,0 +1,75 @@
+
+package com.example.studentmanagement.service;
+
+import com.example.studentmanagement.dao.model.Marks;
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.dao.repository.MarksRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import com.example.studentmanagement.events.MarksUpdatedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+
+
+
+
+@Service
+public class MarksService {
+
+    @Autowired
+    private MarksRepository marksRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+
+    public Marks addMarks(Marks marks) {
+        if (marksRepository.findByRollNo(marks.getRollNo()) != null) {
+            throw new IllegalArgumentException("Marks already exist for student with Roll No: " + marks.getRollNo());
+        }
+        return marksRepository.save(marks);
+    }
+
+    public Optional<Marks> getMarksByRollNo(String rollNo) {
+        return Optional.ofNullable(marksRepository.findByRollNo(rollNo));
+    }
+
+    public List<Marks> getAllMarks() {
+        return marksRepository.findAll();
+    }
+
+
+    public void deleteMarksByRollNo(String rollNo) {
+        marksRepository.deleteByRollNo(rollNo);
+    }
+
+    public Marks updateMarks(String rollNo, Marks updatedMarks) {
+        // Fetch existing marks
+        Marks existingMarks = marksRepository.findByRollNo(rollNo);
+
+        if (existingMarks == null) {
+            throw new RuntimeException("Marks not found for Roll No: " + rollNo);
+        }
+
+
+        existingMarks.setSubjectMarks(updatedMarks.getSubjectMarks());
+        existingMarks.setClassroomID(updatedMarks.getClassroomID());
+
+
+        Marks savedMarks = marksRepository.save(existingMarks);
+
+
+        eventPublisher.publishEvent(new MarksUpdatedEvent(this, rollNo));
+
+        return savedMarks;
+    }
+
+    public List<Marks> getMarksByClassroomId(Integer classroomId) {
+        return marksRepository.findByClassroomID(classroomId);
+    }
+}
