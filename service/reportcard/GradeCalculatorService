@@ -1,0 +1,19 @@
+package com.example.studentmanagement.service.reportcard;
+
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class GradeCalculatorService {
+
+    public String calculateGrade(int totalMarks) {
+        if (totalMarks >= 450) return "A+";
+        if (totalMarks >= 400) return "A";
+        if (totalMarks >= 350) return "B";
+        return "C";
+    }
+
+    public boolean isPass(int totalMarks) {
+        return totalMarks >= 350;
+    }
+}
