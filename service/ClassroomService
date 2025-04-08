@@ -1,0 +1,43 @@
+package com.example.studentmanagement.service;
+import com.example.studentmanagement.dao.model.Classroom;
+import com.example.studentmanagement.dao.repository.ClassroomRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(scanBasePackages = {
+        "com.example.studentmanagement.launcher",
+        "com.example.studentmanagement.service",
+        "com.example.studentmanagement.dao"
+})
+
+@Service
+public class ClassroomService {
+
+    @Autowired
+    private ClassroomRepository classroomRepository;
+
+    public Classroom addClassroom(Classroom classroom) {
+        return classroomRepository.save(classroom);
+    }
+
+    public List<Classroom> getAllClassrooms() {
+        return classroomRepository.findAll();
+    }
+
+    public Optional<Classroom> getClassroomById(Integer classroomId) {
+        return classroomRepository.findByClassroomId(classroomId);
+    }
+
+    public void deleteClassroom(Integer classroomId) {
+        classroomRepository.deleteByClassroomId(classroomId);
+    }
+
+
+}
+
