@@ -1,0 +1,49 @@
+package com.example.studentmanagement.service.reportcard;
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.dao.model.Marks;
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import com.example.studentmanagement.dao.repository.StudentRepository;
+import com.example.studentmanagement.dao.repository.MarksRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class  ReportCardGeneratorService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private MarksRepository marksRepository;
+
+    @Autowired
+    private GradeCalculatorService gradeCalculatorService;
+
+    public ReportCardDTO generateReportCard(String rollNo) {
+        Student student = studentRepository.findByRollNo(rollNo)
+                .orElseThrow(() -> new RuntimeException("Student not found for Roll No: " + rollNo));
+
+        Marks marks = marksRepository.findByRollNo(rollNo);
+        Map<String, Integer> subjectMarks = (marks != null) ? marks.getSubjectMarks() : new HashMap<>();
+        int totalMarks = subjectMarks.values().stream().mapToInt(Integer::intValue).sum();
+        String grade = gradeCalculatorService.calculateGrade(totalMarks);
+
+        return new ReportCardDTO(student.getRollNo(), student.getName(), student.getClassroomId(), totalMarks, grade, subjectMarks);
+    }
+
+    public List<ReportCardDTO> generateAllReportCards() {
+        List<Student> students = studentRepository.findAll();
+        return students.stream()
+                .map(student -> generateReportCard(student.getRollNo()))
+                .collect(Collectors.toList());
+    }
+}
+
+
+
+
+
+
