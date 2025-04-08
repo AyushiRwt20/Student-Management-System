@@ -1,0 +1,24 @@
+
+package com.example.studentmanagement.dao.repository;
+
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface StudentRepository extends MongoRepository<Student, String> {
+    Optional<Student> findByRollNo(String rollNo);
+
+    void deleteByRollNo(String rollNo);
+    List<Student> findByClassroomId(Integer classroomId);
+    boolean existsByRollNo(String rollNo);
+    //Optional<ReportCardDTO> findByRollNo(String rollNo);
+
+
+
+}
+
+
+
