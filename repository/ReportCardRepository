@@ -1,0 +1,16 @@
+package com.example.studentmanagement.dao.repository;
+
+import com.example.studentmanagement.dao.model.ReportCard;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.Optional;
+import java.util.List;
+
+public interface ReportCardRepository extends MongoRepository<ReportCard, String> {
+
+    
+    Optional<ReportCard> findByRollNo(String rollNo);
+
+   
+    List<ReportCard> findByStudent_ClassroomId(Integer classroomId);
+}
+
