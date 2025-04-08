@@ -1,0 +1,77 @@
+
+package com.example.studentmanagement.service;
+
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.dao.repository.StudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.example.studentmanagement.events.StudentUpdatedEvent;
+
+import org.springframework.context.ApplicationEventPublisher;
+
+
+@Service
+public class StudentService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher; //  Event publisher
+
+
+    public Student saveStudent(Student student) {
+        return studentRepository.save(student);
+    }
+
+
+    public Optional<Student> getStudentByRollNo(String rollNo) {
+        return studentRepository.findByRollNo(rollNo);
+    }
+
+
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+
+    public void deleteStudent(String rollNo) {
+        studentRepository.deleteByRollNo(rollNo);
+    }
+
+    public Student createStudent(Student student) {
+        if (isRollNoTaken(student.getRollNo())) {
+            throw new RuntimeException("Roll No already exists: " + student.getRollNo());
+        }
+        return studentRepository.save(student);
+    }
+
+
+    public Student updateStudent(String rollNo, Student updatedStudent) {
+        Student existingStudent = studentRepository.findByRollNo(rollNo)
+                .orElseThrow(() -> new RuntimeException("Student not found with Roll No: " + rollNo));
+
+        existingStudent.setName(updatedStudent.getName());
+        existingStudent.setClassroomId(updatedStudent.getClassroomId());
+
+        Student savedStudent = studentRepository.save(existingStudent);
+
+
+        eventPublisher.publishEvent(new StudentUpdatedEvent(this, rollNo)); // chnges iske wjh se
+
+        return savedStudent;
+    }
+
+    public List<Student> getStudentsByClassroomId(Integer classroomId) {
+        return studentRepository.findByClassroomId(classroomId);
+    }
+
+    public boolean isRollNoTaken(String rollNo) {
+        return studentRepository.findByRollNo(rollNo).isPresent();
+    }
+}
