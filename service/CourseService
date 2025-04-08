@@ -1,0 +1,44 @@
+package com.example.studentmanagement.service;
+import com.example.studentmanagement.dao.model.Course;
+import com.example.studentmanagement.dao.repository.CourseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class CourseService {
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    public Course addCourse(Course course) {
+        return courseRepository.save(course);
+    }
+
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    public Optional<Course> getCourseById(String courseId) {
+        return courseRepository.findById(courseId);
+    }
+
+    public void deleteCourse(String courseId) {
+        courseRepository.deleteById(courseId);
+    }
+
+    public Course updateCourse(String courseId, Course updatedCourse) {
+        Optional<Course> existingCourseOpt = courseRepository.findById(courseId);
+        if (existingCourseOpt.isPresent()) {
+            Course existingCourse = existingCourseOpt.get();
+            existingCourse.setCourseName(updatedCourse.getCourseName() != null ? updatedCourse.getCourseName() : existingCourse.getCourseName());
+            return courseRepository.save(existingCourse);
+        }
+        throw new RuntimeException("Course not found");
+    }
+
+}
+
+
