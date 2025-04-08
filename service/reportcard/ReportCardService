@@ -1,0 +1,120 @@
+/*package com.example.studentmanagement.service.reportcard;
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import com.example.studentmanagement.dao.model.Student;
+import com.example.studentmanagement.dao.model.Marks;
+import com.example.studentmanagement.dao.repository.MarksRepository;
+import com.example.studentmanagement.dao.repository.StudentRepository;
+//import com.example.studentmanagement.factory.ReportCardFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class ReportCardService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private MarksRepository marksRepository;
+
+    public ReportCardDTO getReportCardByRollNo(String rollNo) {
+        Student student = studentRepository.findByRollNo(rollNo)
+                .orElseThrow(() -> new RuntimeException("Student not found for Roll No: " + rollNo));
+
+        // Marks
+        Marks marks = marksRepository.findByRollNo(rollNo);
+
+        int totalMarks = 0;
+        Map<String, Integer> subjectMarks = new HashMap<>();
+
+        if (marks != null && marks.getSubjectMarks() != null) {
+            subjectMarks = marks.getSubjectMarks();
+            totalMarks = subjectMarks.values().stream().mapToInt(Integer::intValue).sum();
+        }
+
+        // Calculate Grade
+        String grade = calculateGrade(totalMarks);
+
+        return new ReportCardDTO(student.getRollNo(), student.getName(), student.getClassroomId(), totalMarks, grade, subjectMarks);
+    }
+
+    public List<ReportCardDTO> getAllReportCards() {
+        // getting data from repo
+        List<Student> students = studentRepository.findAll();
+        List<Marks> marksList = marksRepository.findAll();
+
+
+        Map<String, Student> studentMap = students.stream()
+                .collect(Collectors.toMap(Student::getRollNo, student -> student));
+
+        Map<String, Marks> marksMap = marksList.stream()
+                .collect(Collectors.toMap(Marks::getRollNo, marks -> marks));
+
+        // Generating  Report Card
+        return studentMap.entrySet().stream().map(entry -> {
+            String rollNo = entry.getKey();
+            Student student = entry.getValue();
+            Marks marks = marksMap.get(rollNo); 
+
+            int totalMarks = 0;
+            Map<String, Integer> subjectMarks = new HashMap<>();
+
+            if (marks != null && marks.getSubjectMarks() != null) {
+                subjectMarks = marks.getSubjectMarks();
+                totalMarks = subjectMarks.values().stream().mapToInt(Integer::intValue).sum();
+            }
+            String grade = calculateGrade(totalMarks);
+            return new ReportCardDTO(student.getRollNo(), student.getName(), student.getClassroomId(), totalMarks, grade, subjectMarks);
+        }).collect(Collectors.toList());
+    }
+
+    private String calculateGrade(double totalMarks) {
+        if (totalMarks >= 450) return "A+";
+        if (totalMarks >= 400) return "A";
+        if (totalMarks >= 350) return "B";
+        return "C";
+    }
+}*/
+package com.example.studentmanagement.service.reportcard;
+import com.example.studentmanagement.dao.model.dto.ReportCardDTO;
+import com.example.studentmanagement.dao.repository.StudentRepository;
+import com.example.studentmanagement.dao.repository.MarksRepository;
+import com.example.studentmanagement.factory.ReportCardFactory;
+import com.example.studentmanagement.ReportCardType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class ReportCardService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private MarksRepository marksRepository;
+
+    @Autowired
+    private ReportCardFactory reportCardFactory;
+
+    public ReportCardDTO getReportCardByRollNo(String rollNo) {
+        return reportCardFactory.createReportCard(rollNo);
+    }
+
+    public List<ReportCardDTO> getAllReportCards() {
+        return reportCardFactory.createAllReportCards();
+    }
+
+    public List<ReportCardDTO> getFilteredReportCards(ReportCardType type) {
+        return reportCardFactory.createFilteredReportCards(type);
+    }
+}
+
+
+
+
+
